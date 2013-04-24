@@ -32,9 +32,11 @@ public class GenericDaoImpl implements GenericMutableDao {
 
   private final Logger _log = LoggerFactory.getLogger(GenericDaoImpl.class);
 
-  private Map<Class<?>, Map<Object, Object>> _entitiesByClassAndId = new HashMap<Class<?>, Map<Object, Object>>();
+  private Map<Class<?>, Map<Object, Object>>
+      _entitiesByClassAndId = new HashMap<Class<?>, Map<Object, Object>>();
 
-  private Map<Class<?>, EntityHandler<Serializable>> _handlers = new HashMap<Class<?>, EntityHandler<Serializable>>();
+  private Map<Class<?>, EntityHandler<Serializable>>
+      _handlers = new HashMap<Class<?>, EntityHandler<Serializable>>();
 
   private boolean _generateIds = true;
 
@@ -51,9 +53,26 @@ public class GenericDaoImpl implements GenericMutableDao {
   }
 
   @SuppressWarnings("unchecked")
-  public <K, V> Map<K, V> getEntitiesByIdForEntityType(Class<K> keyType,
-      Class<V> entityType) {
+  public <K, V> Map<K, V> getEntitiesByIdForEntityType(
+      Class<K> keyType, Class<V> entityType) {
     return (Map<K, V>) _entitiesByClassAndId.get(entityType);
+  }
+
+  public void reindexIds() {
+    Map<Class<?>, Map<Object, Object>> entitiesByClassAndId = new HashMap<
+        Class<?>, Map<Object, Object>>();
+    for (Map.Entry<Class<?>, Map<Object, Object>> entry :
+        _entitiesByClassAndId.entrySet()) {
+      Map<Object, Object> updatedEntityByIdMapping = new HashMap<
+          Object, Object>();
+      for (Object entity : entry.getValue().values()) {
+        @SuppressWarnings("unchecked")
+        IdentityBean<Serializable> bean = ((IdentityBean<Serializable>) entity);
+        updatedEntityByIdMapping.put(bean.getId(), bean);
+      }
+      entitiesByClassAndId.put(entry.getKey(), updatedEntityByIdMapping);
+    }
+    _entitiesByClassAndId = entitiesByClassAndId;
   }
 
   /****

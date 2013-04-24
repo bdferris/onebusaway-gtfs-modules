@@ -25,4 +25,12 @@ public class UpdateLibrary {
       daoImpl.clearAllCaches();
     }
   }
+  
+  public static void reindexDaoIds(GtfsRelationalDao dao) {
+    if (dao instanceof GtfsRelationalDaoImpl) {
+      GtfsRelationalDaoImpl daoImpl = (GtfsRelationalDaoImpl) dao;
+      daoImpl.reindexIds();
+      daoImpl.clearAllCaches();
+    }
+  }
 }
